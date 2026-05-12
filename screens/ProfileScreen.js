@@ -1,21 +1,31 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, FlatList, SafeAreaView, TouchableOpacity, Dimensions } from 'react-native';
 import { useEvents } from '../context/EventContext';
-import { useTheme } from '../context/ThemeContext'; // 1. Tema hook'unu ekledik
+import { useTheme } from '../context/ThemeContext'; // Tema hook'u
 
 const { width } = Dimensions.get('window');
 
 const ProfileScreen = () => {
   const { registrations, favorites, unregister } = useEvents();
-  const { theme } = useTheme(); // 2. Tema verilerini çektik
+  const { theme, toggleTheme } = useTheme(); // toggleTheme'i buraya ekledik
 
   return (
-    // 3. Stillerin yanına dizi [] içinde temadan gelen renkleri ekledik
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-      {/* Arka Plan Pembe Şerit (Bu sabit kalabilir veya temaya göre değişebilir) */}
+      {/* Arka Plan Pembe Şerit */}
       <View style={[styles.topPinkBar, { backgroundColor: theme.isDarkMode ? '#442222' : '#F9C2CD' }]} />
 
       <View style={styles.content}>
+        
+        {/* TEST BUTONU: Arkadaşın Settings ekranını bitirince bunu silebilirsin */}
+        <TouchableOpacity 
+          onPress={toggleTheme} 
+          style={[styles.testButton, { backgroundColor: theme.isDarkMode ? '#FFF' : '#333' }]}
+        >
+          <Text style={{ color: theme.isDarkMode ? '#333' : '#FFF', fontSize: 10, fontWeight: 'bold' }}>
+            {theme.isDarkMode ? 'LIGHT MODE YAP' : 'DARK MODE YAP'}
+          </Text>
+        </TouchableOpacity>
+
         {/* Profil Bilgileri */}
         <View style={styles.profileHeader}>
           <View style={[styles.avatarContainer, { backgroundColor: theme.card }]}>
@@ -70,6 +80,15 @@ const ProfileScreen = () => {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   topPinkBar: { height: 120, borderBottomLeftRadius: 40, borderBottomRightRadius: 40, position: 'absolute', width: '100%' },
+  testButton: { 
+    alignSelf: 'flex-end', 
+    marginRight: 20, 
+    padding: 8, 
+    borderRadius: 10, 
+    marginTop: 10,
+    elevation: 5,
+    zIndex: 10 // Üstte görünmesi için
+  },
   content: { flex: 1, marginTop: 40 },
   profileHeader: { alignItems: 'center', marginBottom: 30 },
   avatarContainer: { width: 110, height: 110, borderRadius: 55, justifyContent: 'center', alignItems: 'center', elevation: 5, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 10 },
