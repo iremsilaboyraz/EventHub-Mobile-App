@@ -3,6 +3,7 @@ import { View, Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons'; // Eksik olan import buydu!
+import FavoritesScreen from './screens/FavoritesScreen';
 
 import ProfileScreen from './screens/ProfileScreen';
 
@@ -37,7 +38,7 @@ export default function AppNavigator() {
         })}
       >
         <Tab.Screen name="Profile" component={ProfileScreen} />
-        <Tab.Screen name="Favorites" component={TempScreen} />
+        <Tab.Screen name="Favorites" component={FavoritesScreen} />
       </Tab.Navigator>
     </NavigationContainer>
   );
