@@ -1,114 +1,204 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, FlatList, SafeAreaView, TouchableOpacity, Dimensions } from 'react-native';
-import { useEvents } from '../context/EventContext';
-import { useTheme } from '../context/ThemeContext'; // Tema hook'u
-
-const { width } = Dimensions.get('window');
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 const ProfileScreen = () => {
-  const { registrations, favorites, unregister } = useEvents();
-  const { theme, toggleTheme } = useTheme(); // toggleTheme'i buraya ekledik
+  // Etkinlik verileri - En hızlı yüklenen görseller
+  const registeredEvents = [
+    { 
+      id: '1', 
+      title: 'StartUp Pitch', 
+      category: 'Tech', 
+      image: { uri: 'https://picsum.photos/id/1/200/200' } 
+    },
+    { 
+      id: '2', 
+      title: 'StartUp Pitch', 
+      category: 'Tech', 
+      image: { uri: 'https://picsum.photos/id/10/200/200' } 
+    },
+  ];
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-      {/* Arka Plan Pembe Şerit */}
-      <View style={[styles.topPinkBar, { backgroundColor: theme.isDarkMode ? '#442222' : '#F9C2CD' }]} />
+    <View style={styles.container}>
+      {/* Üst Pembe Kavisli Alan */}
+      <View style={styles.topHeader} />
 
-      <View style={styles.content}>
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         
-        {/* TEST BUTONU: Arkadaşın Settings ekranını bitirince bunu silebilirsin */}
-        <TouchableOpacity 
-          onPress={toggleTheme} 
-          style={[styles.testButton, { backgroundColor: theme.isDarkMode ? '#FFF' : '#333' }]}
-        >
-          <Text style={{ color: theme.isDarkMode ? '#333' : '#FFF', fontSize: 10, fontWeight: 'bold' }}>
-            {theme.isDarkMode ? 'LIGHT MODE YAP' : 'DARK MODE YAP'}
-          </Text>
-        </TouchableOpacity>
-
-        {/* Profil Bilgileri */}
-        <View style={styles.profileHeader}>
-          <View style={[styles.avatarContainer, { backgroundColor: theme.card }]}>
-            <Image 
-              source={{ uri: 'https://via.placeholder.com/100' }} 
-              style={styles.avatar} 
-            />
-          </View>
-          <Text style={[styles.userName, { color: theme.text }]}>Emily J.</Text>
-          <Text style={[styles.userEmail, { color: theme.subText }]}>email@eventhub.com</Text>
+        {/* Profil Bölümü */}
+        <View style={styles.profileImageContainer}>
+        <Image 
+  source={{ uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400' }} 
+  style={styles.profileImage}
+/>
         </View>
 
-        {/* İstatistik Kutuları */}
-        <View style={styles.statsRow}>
-          <View style={[styles.statBox, { backgroundColor: theme.card }]}>
-            <Text style={[styles.statLabel, { color: theme.text }]}>Events joined</Text>
-            <Text style={[styles.statNumber, { color: theme.primary }]}>{registrations.length}</Text>
+        <View style={styles.infoContainer}>
+          <Text style={styles.name}>Emily J.</Text>
+          <Text style={styles.email}>email@eventhub.com</Text>
+        </View>
+
+        {/* İstatistik Kartları */}
+        <View style={styles.statsWrapper}>
+          <View style={styles.statCard}>
+            <Text style={styles.statLabel}>Events joined</Text>
+            <Text style={styles.statNumber}>7</Text>
           </View>
-          <View style={[styles.statBox, { backgroundColor: theme.card }]}>
-            <Text style={[styles.statLabel, { color: theme.text }]}>Favorites</Text>
-            <Text style={[styles.statNumber, { color: theme.primary }]}>{favorites.length}</Text>
+          <View style={styles.statCard}>
+            <Text style={styles.statLabel}>Favorites</Text>
+            <Text style={styles.statNumber}>12</Text>
           </View>
         </View>
 
-        <Text style={[styles.listHeader, { color: theme.text }]}>Registered Events</Text>
+        {/* Liste Başlığı */}
+        <Text style={styles.sectionTitle}>Registered Events</Text>
 
-        <FlatList
-          data={registrations}
-          keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={{ paddingBottom: 100 }}
-          renderItem={({ item }) => (
-            <View style={[styles.eventCard, { backgroundColor: theme.card }]}>
-              <View style={styles.eventInfo}>
-                <View style={styles.eventImagePlaceholder} />
-                <View style={styles.eventText}>
-                  <Text style={[styles.eventTitle, { color: theme.text }]}>{item.title}</Text>
-                  <Text style={[styles.eventCategory, { color: theme.subText }]}>Category:{item.category}</Text>
-                </View>
-              </View>
-              <TouchableOpacity style={styles.cancelBtn} onPress={() => unregister(item.id)}>
-                <Text style={styles.cancelBtnText}>Cancel</Text>
-              </TouchableOpacity>
+        {/* Etkinlik Listesi */}
+        {registeredEvents.map((event) => (
+          <View key={event.id} style={styles.eventCard}>
+            <Image source={event.image} style={styles.eventImage} />
+            <View style={styles.eventDetails}>
+              <Text style={styles.eventTitle}>{event.title}</Text>
+              <Text style={styles.eventCategory}>Category: {event.category}</Text>
             </View>
-          )}
-          ListEmptyComponent={<Text style={[styles.emptyText, { color: theme.subText }]}>Henüz kayıtlı etkinlik yok.</Text>}
-        />
-      </View>
-    </SafeAreaView>
+            <TouchableOpacity style={styles.cancelButton}>
+              <Text style={styles.cancelButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        ))}
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  topPinkBar: { height: 120, borderBottomLeftRadius: 40, borderBottomRightRadius: 40, position: 'absolute', width: '100%' },
-  testButton: { 
-    alignSelf: 'flex-end', 
-    marginRight: 20, 
-    padding: 8, 
-    borderRadius: 10, 
-    marginTop: 10,
-    elevation: 5,
-    zIndex: 10 // Üstte görünmesi için
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFBFC',
   },
-  content: { flex: 1, marginTop: 40 },
-  profileHeader: { alignItems: 'center', marginBottom: 30 },
-  avatarContainer: { width: 110, height: 110, borderRadius: 55, justifyContent: 'center', alignItems: 'center', elevation: 5, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 10 },
-  avatar: { width: 100, height: 100, borderRadius: 50 },
-  userName: { fontSize: 24, fontWeight: 'bold', marginTop: 10 },
-  userEmail: { fontSize: 14 },
-  statsRow: { flexDirection: 'row', justifyContent: 'space-evenly', marginBottom: 30 },
-  statBox: { width: width * 0.4, padding: 15, borderRadius: 20, alignItems: 'center', elevation: 4, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 5 },
-  statLabel: { fontSize: 13, fontWeight: '600' },
-  statNumber: { fontSize: 22, fontWeight: 'bold', marginTop: 5 },
-  listHeader: { fontSize: 18, fontWeight: 'bold', marginLeft: 25, marginBottom: 15 },
-  eventCard: { marginHorizontal: 20, marginBottom: 15, padding: 12, borderRadius: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', elevation: 3, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 5 },
-  eventInfo: { flexDirection: 'row', alignItems: 'center' },
-  eventImagePlaceholder: { width: 60, height: 60, borderRadius: 15, backgroundColor: '#333' },
-  eventText: { marginLeft: 12 },
-  eventTitle: { fontWeight: 'bold', fontSize: 15 },
-  eventCategory: { fontSize: 12 },
-  cancelBtn: { backgroundColor: '#FADADD', paddingHorizontal: 15, paddingVertical: 8, borderRadius: 15 },
-  cancelBtnText: { color: '#D81B60', fontWeight: 'bold', fontSize: 12 },
-  emptyText: { textAlign: 'center', marginTop: 20 }
+  topHeader: {
+    height: 150,
+    backgroundColor: '#FFB6C1', 
+    borderBottomLeftRadius: 50,
+    borderBottomRightRadius: 50,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+  },
+  scrollContent: {
+    paddingTop: 80,
+    paddingBottom: 100,
+  },
+  profileImageContainer: {
+    alignItems: 'center',
+    zIndex: 1,
+  },
+  profileImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    borderWidth: 4,
+    borderColor: 'white',
+    backgroundColor: '#FDE2E4',
+  },
+  infoContainer: {
+    alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 25,
+  },
+  name: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    color: '#000',
+  },
+  email: {
+    fontSize: 15,
+    color: '#444',
+    marginTop: 4,
+  },
+  statsWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 25,
+    marginBottom: 30,
+  },
+  statCard: {
+    backgroundColor: 'white',
+    width: '46%',
+    paddingVertical: 18,
+    borderRadius: 22,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 4,
+  },
+  statLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#666',
+    marginBottom: 6,
+  },
+  statNumber: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#000',
+  },
+  sectionTitle: {
+    fontSize: 19,
+    fontWeight: 'bold',
+    marginHorizontal: 25,
+    marginBottom: 15,
+    color: '#000',
+  },
+  eventCard: {
+    backgroundColor: 'white',
+    marginHorizontal: 25,
+    marginBottom: 15,
+    borderRadius: 22,
+    padding: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  eventImage: {
+    width: 65,
+    height: 65,
+    borderRadius: 15,
+    backgroundColor: '#EEE',
+  },
+  eventDetails: {
+    flex: 1,
+    marginLeft: 15,
+  },
+  eventTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#000',
+  },
+  eventCategory: {
+    fontSize: 13,
+    color: '#777',
+    marginTop: 3,
+  },
+  cancelButton: {
+    backgroundColor: '#FFB6C1',
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 12,
+  },
+  cancelButtonText: {
+    color: '#000',
+    fontSize: 12,
+    fontWeight: '600',
+  },
 });
 
 export default ProfileScreen;
